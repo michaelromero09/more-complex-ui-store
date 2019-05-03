@@ -7,7 +7,8 @@ const STORE = {
     {id: cuid(), name: "milk", checked: true},
     {id: cuid(), name: "bread", checked: false}
   ],
-  hideCompleted: false
+  hideCompleted: false,
+  filterTerm: ''
 };
 
 function generateItemElement(item) {
@@ -49,6 +50,10 @@ function renderShoppingList() {
     filteredItems = filteredItems.filter(item => !item.checked);
   }
 
+  if (STORE.filterTerm) {
+    filteredItems = filteredItems.filter(item => item.name === STORE.filterTerm);
+  }
+
   // at this point, all filtering work has been done (or not done, if that's the current settings), so
   // we send our `filteredItems` into our HTML generation function 
   const shoppingListItemsString = generateShoppingItemsString(filteredItems);
@@ -60,7 +65,7 @@ function renderShoppingList() {
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.items.push({name: itemName, checked: false});
+  STORE.items.push({id: cuid(), name: itemName, checked: false});
 }
 
 function handleNewItemSubmit() {
@@ -137,6 +142,25 @@ function handleToggleHideFilter() {
   });
 }
 
+function filterList(term) {
+  if (term) {
+    console.log(`Filtering by term: ${term}`);
+  } else {
+    console.log('Showing full shopping list');
+  }
+  STORE.filterTerm = term;
+  renderShoppingList();
+}
+
+function handleFilterSubmit() {
+  $('#js-filter-form').submit((e) => {
+    e.preventDefault();
+    console.log('Filter button clicked');
+    const filter = $('.shopping-list-filter').val();
+    filterList(filter);
+  });
+}
+
 // this function will be our callback when the page loads. it's responsible for
 // initially rendering the shopping list, and activating our individual functions
 // that handle new item submission and user clicks on the "check" and "delete" buttons
@@ -147,6 +171,7 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleHideFilter();
+  handleFilterSubmit();
 }
 
 // when the page loads, call `handleShoppingList`

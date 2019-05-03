@@ -22,6 +22,9 @@ function generateItemElement(item) {
         <button class="shopping-item-delete js-item-delete">
             <span class="button-label">delete</span>
         </button>
+        <button class="shopping-item-edit js-item-edit">
+            <span class="button-label">edit</span>
+        </button>
       </div>
     </li>`;
 }
@@ -149,7 +152,6 @@ function filterList(term) {
     console.log('Showing full shopping list');
   }
   STORE.filterTerm = term;
-  renderShoppingList();
 }
 
 function handleFilterSubmit() {
@@ -158,6 +160,26 @@ function handleFilterSubmit() {
     console.log('Filter button clicked');
     const filter = $('.shopping-list-filter').val();
     filterList(filter);
+    renderShoppingList();
+  });
+}
+
+function editItem(id) {
+  const newName = prompt('Edit Name');
+  console.log(`Editing item with id: ${id}`);
+  STORE.items.map(item => {
+    if (item.id === id) {
+      item.name = newName;
+    }
+  });
+}
+
+function handleEditItemClicked() {
+  $('.js-shopping-list').on('click', '.js-item-edit', event => {
+    console.log('Edit button clicked');
+    const id = getItemIdFromElement(event.currentTarget);
+    editItem(id);
+    renderShoppingList();
   });
 }
 
@@ -172,6 +194,7 @@ function handleShoppingList() {
   handleDeleteItemClicked();
   handleToggleHideFilter();
   handleFilterSubmit();
+  handleEditItemClicked();
 }
 
 // when the page loads, call `handleShoppingList`
